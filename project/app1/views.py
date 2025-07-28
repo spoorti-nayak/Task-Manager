@@ -1,58 +1,93 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from django.http import HttpResponse
-from .forms import ContactForm
+from .forms import ContactForm,StudentForm,RegisterForm,LoginForm
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
 
-# Create your views here.
-# def landingPage(request):
-#     # return HttpResponse("Hello world")
-#     return HttpResponse("<h1>Hello world</h1>")
-
-list1=[
-     {"title":"title1","text":"Card-1 text","price":"US# 100"},
-    {"title":"title2","text":"Card-2 text","price":"US# 200"},
-  {"title":"title3","text":"Card-3 text","price":"US# 300"}
-]
-
-# def firstPageView(request):
-#     return render(request,'first.html',{'name':"Python"})
-
-def firstPageView(request):
-    return render(request,'first.html',{'li':list1})
-
-def secondPageView(request):
-        return render(request,'second.html')
+list1=[{"title":"title1","text":"Navigation available in Bootstrap share general markup and styles, from the base .nav class to the active and disabled states. Swap modifier classes to switch between each style","price":"US& 100"},
+       {"title":"title1","text":"Card1","price":"US& 200"},
+       {"title":"title1","text":"Card1","price":"US& 300"}]
 
 def landingPage(request):
     return render(request,'landing.html')
 
-def pricingPage(request):
-     return render(request,'pricing.html')
+def firstPageView(request):
+    return render(request,'first.html',{"name":"Python","age":30,"li":list1})
 
-def pricingPage(request):
-     return render(request,'pricing.html')
+def pricingPageView(request):
+    return render(request,'pricing.html')
 
-def pricingPage2(request):
-     return render(request,'pricing2.html',{'li':list1})
+def pricingPageView2(request):
+    return render(request,'pricing2.html',{"li":list1})
 
-
-def contactPage(request):
-     #add code for form validation
-     if request.method == 'POST':
-        form = ContactForm(request.POST)
+def contactPageView(request):
+    form=ContactForm() 
+    if request.method=='POST':
+        form=ContactForm(request.POST)
         if form.is_valid():
-             print("Hi")
+            print("Hi")
+            messages.success(request,"Response recorded")
         else:
-             print("Bye")
-            
-            
-
-
-     return render(request,'contact.html')
-
-#list1=[{"name":"Price1"},{"name2":"price2"},{"name3":"price3"}]
+            print("Bye")
+            return render(request,'contact.html',{'form_data':form})
+    return render(request,'contact.html',{'form_data':form})
 
 def indexPageView(request):
-     return render(request,'index.html')
+    return render(request,'index.html')
 
+def studentPageView(request):
+    student_form=StudentForm()
+    if request.method=='POST':
+        
+        student_form=StudentForm(request.POST)
+        if student_form.is_valid():
+            student_form.save()
+            print("Form Accepted")
+            
+        else:
+            print("Not Accepted")
+            return render(request,'student.html',{'student_data':student_form})
+    return render(request,'student.html',{'student_data':student_form})
+
+def registerPageView(request):
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+            messages.success(request, "Registration successful!")
+            return redirect('loginPage')
+    else:
+        form = RegisterForm()  # This line ensures 'form' exists during GET requests
+
+    return render(request, 'register.html', {'form': form})
+
+
+def loginPageView(request):
+    if request.method == 'POST':
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            uname = form.cleaned_data['username']
+            pwd = form.cleaned_data['password']
+            user = authenticate(request, username=uname, password=pwd)
+            if user is not None:
+                login(request, user)
+                # messages.success(request, "Login successful!")
+                return redirect('dashboardPage')
+            else:
+                messages.error(request, "Invalid username or password")
+    else:
+        form = LoginForm()
+    
+    return render(request, 'login.html', {'form': form})
+
+def dashboardPageView(request):
+    return render(request,'dashboard.html')
+
+def logoutPageView(request):
+    logout(request)
+    messages.success(request,"You have been logged out")
+    return redirect(loginPageView)
 
 

@@ -5,13 +5,15 @@
         <h1>Contact Form</h1>
         <form class="form" method="post">
             {% csrf_token %}
+            
+            
             <div class="row">
                 <div class="col-6 my-3">
                     <input class="form-control" name="name" type="text" placeholder="Username" />
                 </div>
                 <div class="col-6 my-3">
                     <input class="form-control" name="email" type="email" placeholder="Email" />
-                </div>
+                </div> 
                 <div class="col-12 my-3">
                     <textarea class="form-control" name="message" rows="6" placeholder="Message"></textarea>
                 </div>

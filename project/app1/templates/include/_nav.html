@@ -1,12 +1,25 @@
 
 
  <nav class="navbar">
-        <a class="navbar-brand" href="#">Home</a>
+        {% comment %} <a class="navbar-brand" href="#">Home</a> {% endcomment %}
+        <a href="{% url "LandingPage" %}" class="nav-link">Home</a>
+       
         <div class="nav">
             <a href="{% url "pricingPage2" %}" class="nav-link">Pricing</a>
             <a href="{% url "contactPage" %}" class="nav-link">Contact</a>
-            <a href="#" class="nav-link">Register</a>
-            <a href="#" class="nav-link">Login</a>
+            {% comment %} <a href="{% url "registerPage" %}" class="nav-link">Register</a>
+            <a href="{% url "loginPage" %}" class="nav-link">Login</a> {% endcomment %}
+            {% if user.is_authenticated %}
+                <!-- Authenticated User Links -->
+                <a class="nav-link" href="{% url 'dashboardPage' %}">Dashboard</a>
+                 <a class="nav-link" href="{% url 'logoutPage' %}">Logout</a> 
+            {% else %}
+                <!-- Unauthenticated User Links -->
+                <a class="nav-link" href="{% url 'registerPage' %}">Register</a>
+                <a class="nav-link" href="{% url 'loginPage' %}">Login</a>
+            {% endif %}
+
+
         </div>
     </nav>
 
